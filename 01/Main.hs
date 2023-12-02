@@ -66,10 +66,10 @@ solve2 x = sum $ map calibrationValue2 $ splitOn "\n" x
 
 main1 :: IO ()
 main1 = do
-  contents <- readFile "input1.txt"
+  contents <- readFile "input.txt"
   print $ solve1 $ T.pack contents
 
 main2 :: IO ()
 main2 = do
-  contents <- readFile "input2.txt"
+  contents <- readFile "input.txt"
   print $ solve2 $ T.pack contents
