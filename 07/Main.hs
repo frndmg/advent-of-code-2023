@@ -90,3 +90,82 @@ main :: IO ()
 main = do
   content <- readFile "input.txt"
   print $ foldr (+) 0 $ map (uncurry (*)) $ zip [1..] $ map snd $ sortOn fst $ makePuzzle content
+
+-- duplicate almost everything to reflect the new busines logic
+
+data Card' = J' | Two' | Three' | Four' | Five' | Six' | Seven' | Eight' | Nine' | T' | Q' | K' | A' deriving (Eq, Ord)
+
+instance Show Card' where
+  show A' = "A"
+  show K' = "K"
+  show Q' = "Q"
+  show J' = "J"
+  show T' = "T"
+  show Nine' = "9"
+  show Eight' = "8"
+  show Seven' = "7"
+  show Six' = "6"
+  show Five' = "5"
+  show Four' = "4"
+  show Three' = "3"
+  show Two' = "2"
+
+fromChar' :: Char -> Card'
+fromChar' 'A' = A'
+fromChar' 'K' = K'
+fromChar' 'Q' = Q'
+fromChar' 'J' = J'
+fromChar' 'T' = T'
+fromChar' '9' = Nine'
+fromChar' '8' = Eight'
+fromChar' '7' = Seven'
+fromChar' '6' = Six'
+fromChar' '5' = Five'
+fromChar' '4' = Four'
+fromChar' '3' = Three'
+fromChar' '2' = Two'
+fromChar' _ = error "Invalid card"
+
+newtype Hand' = Hand' [Card'] deriving (Eq, Show)
+
+getType' :: Hand' -> HandType
+getType' (Hand' cards)
+  -- Ok lol, 5 Js is a FiveOfAKind
+  | countCard J' == 5                     = FiveOfAKind
+  | length labels == 1 && firstLabel == 5 = FiveOfAKind
+  | length labels == 2 && firstLabel == 4 = FourOfAKind
+  | length labels == 2 && firstLabel == 3 = FullHouse
+  | length labels == 3 && firstLabel == 3 = ThreeOfAKind
+  | length labels == 3 && firstLabel == 2 = TwoPair
+  | length labels == 4 && firstLabel == 2 = OnePair
+  | length labels == 5                    = HighCard
+  | otherwise = error $ "What?!" ++ (show cards) ++ (show labels)
+  where
+    countCard card = length $ filter (== card) cards
+    labels = reverse $ sort $ map snd $ nub $ map (\x -> (x, countCard x)) $ filter (/= J') cards
+    firstLabel = (labels !! 0) + (countCard J')
+
+instance Ord Hand' where
+  (<=) a@(Hand' va) b@(Hand' vb)
+    | getType' a /= getType' b = getType' a <= getType' b
+    | otherwise              = go va vb
+      where
+        go [] [] = True
+        go (a:as) (b:bs)
+          | a == b    = go as bs
+          | a < b     = True
+          | otherwise = False
+
+parseHand' :: Parser Hand'
+parseHand' = (Hand' . (map fromChar')) <$> count 5 (oneOf "AKQJT98765432")
+
+parsePuzzle' :: Parser [(Hand', Int)]
+parsePuzzle' = ((,) <$> (parseHand' <* space) <*> number) `sepEndBy` newline
+
+makePuzzle' :: String -> [(Hand', Int)]
+makePuzzle' text = let Right puzzle = parse parsePuzzle' "" text in puzzle
+
+main' :: IO ()
+main' = do
+  content <- readFile "input.txt"
+  print $ foldr (+) 0 $ map (uncurry (*)) $ zip [1..] $ map snd $ sortOn fst $ makePuzzle' content
