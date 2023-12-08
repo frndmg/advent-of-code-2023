@@ -38,14 +38,28 @@ findZZZ g@(Graph m) n (x:ins) = [n] ++ findZZZ g next ins
       | x == 'L' = fromJust $ fst <$> (M.lookup n m)
       | x == 'R' = fromJust $ snd <$> (M.lookup n m)
 
-findZZZs :: Graph -> [NodeID] -> String -> [[NodeID]]
-findZZZs g@(Graph m) ns (x:ins)
-  | all (\n -> last n == 'Z') ns = [ns]
-  | otherwise = [ns] ++ findZZZs g next ins
-    where
-      next
-        | x == 'L' = catMaybes $ map (fst <$>) $ map ((flip M.lookup) m) ns
-        | x == 'R' = catMaybes $ map (snd <$>) $ map ((flip M.lookup) m) ns
+findZZZ' :: Graph -> NodeID -> String -> [NodeID]
+findZZZ' _ (_:_:'Z':[]) _ = []
+findZZZ' g@(Graph m) n (x:ins) = [n] ++ findZZZ' g next ins
+  where
+    next
+      | x == 'L' = fromJust $ fst <$> (M.lookup n m)
+      | x == 'R' = fromJust $ snd <$> (M.lookup n m)
+
+-- findZZZs :: Graph -> [NodeID] -> String -> [[NodeID]]
+-- findZZZs g@(Graph m) ns (x:ins)
+--   | all (\n -> last n == 'Z') ns = []
+--   | otherwise = [ns] ++ findZZZs g next ins
+--     where
+--       next
+--         | x == 'L' = left g ns
+--         | x == 'R' = right g ns
+
+-- left :: Graph -> [NodeID] -> [NodeID]
+-- left g@(Graph m) ns = catMaybes $ map (fst <$>) $ map ((flip M.lookup) m) ns
+
+-- right :: Graph -> [NodeID] -> [NodeID]
+-- right g@(Graph m) ns = catMaybes $ map (snd <$>) $ map ((flip M.lookup) m) ns
 
 spaces = many1 $ string " "
 
@@ -73,5 +87,5 @@ main1 = do
 main2 :: IO ()
 main2 = do
   content <- readFile "input.txt"
-  let (ins, g@(Graph m)) = makeProblem test2
-  print $ findZZZs g (filter (\n -> last n == 'A') (M.keys m)) ins
+  let (ins, g@(Graph m)) = makeProblem content
+  print $ foldr lcm 1 $ map length $ map (\n -> findZZZ' g n ins) $ filter (\n -> last n == 'A') (M.keys m)
