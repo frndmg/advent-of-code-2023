@@ -116,6 +116,16 @@ test = "467..114..\n\
        \...$.*....\n\
        \.664.598.."
 
+-- |
+-- >>> sum $ adjacentNumbers $ makeGraph test
+-- 4361
+_part1 = undefined
+
+-- |
+-- >>> sum $ gearRatios $ makeGraph test
+-- 467835
+_part2 = undefined
+
 main1 :: IO ()
 main1 = do
   content <- readFile "input.txt"
@@ -125,3 +135,6 @@ main2 :: IO ()
 main2 = do
   content <- readFile "input.txt"
   print $ sum $ gearRatios $ makeGraph content
+
+main :: IO ()
+main = undefined
