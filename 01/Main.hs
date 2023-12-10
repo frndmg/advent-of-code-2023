@@ -2,9 +2,9 @@
 
 import Data.Text (Text, split, splitOn)
 import qualified Data.Text as T
-import System.IO
 import Control.Monad
 import Data.Maybe (catMaybes)
+import Test.DocTest (doctest)
 
 test :: Text
 test = "1abc2\n\
@@ -64,12 +64,23 @@ solve1 x = sum $ map calibrationValue $ splitOn "\n" x
 solve2 :: Text -> Int
 solve2 x = sum $ map calibrationValue2 $ splitOn "\n" x
 
-main1 :: IO ()
-main1 = do
+-- |
+-- >>> solve1 $ test
+-- 142
+part1 :: IO ()
+part1 = do
   contents <- readFile "input.txt"
   print $ solve1 $ T.pack contents
 
-main2 :: IO ()
-main2 = do
+-- |
+-- >>> solve2 $ test2
+-- 281
+part2 :: IO ()
+part2 = do
   contents <- readFile "input.txt"
   print $ solve2 $ T.pack contents
+
+main :: IO ()
+main = undefined
+
+runTests = doctest ["./Main.hs"]
