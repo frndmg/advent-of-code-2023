@@ -9,6 +9,11 @@ test = "0 3 6 9 12 15\n\
        \1 3 6 10 15 21\n\
        \10 13 16 21 30 45"
 
+-- | diff
+-- >>> diff [1, 2, 3, 4]
+-- [1,1,1]
+-- >>> diff []
+-- *** Exception: Prelude.tail: empty list
 diff :: [Int] -> [Int]
 diff xs = map (uncurry (-)) $ zip (tail xs) (init xs)
 
@@ -41,3 +46,6 @@ main2 :: IO ()
 main2 = do
   content <- readFile "input.txt"
   print $ sum $ map extrapolate $ makePuzzle content
+
+main :: IO ()
+main = undefined
