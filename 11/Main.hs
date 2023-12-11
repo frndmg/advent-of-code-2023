@@ -64,8 +64,7 @@ pairs :: [a] -> [(a, a)]
 pairs xs = [(x, y) | (x:rest) <- tails xs, y <- rest]
 
 part1 :: String -> Int
-part1 text = sum $ map (uncurry distance) $ pairs universe
-  where universe = expandUniverse $ galaxies text
+part1 = part2 1
 
 part2 :: Int -> String -> Int
 part2 c text = sum $ map (uncurry distance) $ pairs universe
