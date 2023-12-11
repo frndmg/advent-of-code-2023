@@ -24,7 +24,7 @@ empty = findEmpty . foldr (.|.) 0 . map (1 `shiftL`)
 
 findEmpty :: Integer -> [Int]
 findEmpty x =
-  -- Get the index of the ones with the first bit activated
+  -- Get the index of the ones with the first bit deactivated
   findIndices (not . (`testBit` 0))
   -- Get all right shifts until 0
   $ takeWhile (/= 0) $ iterate (`shiftR` 1) x
