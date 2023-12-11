@@ -67,8 +67,9 @@ part1 :: String -> Int
 part1 = part2 1
 
 part2 :: Int -> String -> Int
-part2 c text = sum $ map (uncurry distance) $ pairs universe
-  where universe = expandUniverse' c $ galaxies text
+part2 c text =
+  sum $ map (uncurry distance)
+  $ pairs $ expandUniverse' c $ galaxies text
 
 main1 :: IO ()
 main1 = do
