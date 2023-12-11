@@ -80,8 +80,11 @@ main2 = do
   readFile "input.txt" >>= (print . part2 999999)
 
 test = hspec $ do
-  it "part1" $ do
-    part1 example1 `shouldBe` 374
-  it "part2" $ do
-    part2 9 example1 `shouldBe` 1030
-    part2 99 example1 `shouldBe` 8410
+  describe "part1" $ do
+    it "part one solution should solve example" $ do
+      part1 example1 `shouldBe` 374
+  describe "part2" $ do
+    it "part two solution should solve example for 1, 9 and 99 expansion" $ do
+      part2 1 example1 `shouldBe` 374
+      part2 9 example1 `shouldBe` 1030
+      part2 99 example1 `shouldBe` 8410
