@@ -17,7 +17,7 @@ galaxies :: String -> [(Int, Int)]
 galaxies text =
   [ (x, y)
   | (x, line) <- zip [0..] $ lines text
-  , (y, _) <- filter (\(_, v) -> v == '#') $ zip [0..] $ line ]
+  , y <- findIndices (== '#') $ line ]
 
 empty :: [Int] -> [Int]
 empty = findEmpty . foldr (.|.) 0 . map (1 `shiftL`)
