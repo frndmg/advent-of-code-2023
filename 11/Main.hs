@@ -1,6 +1,6 @@
 import Test.Hspec
-import Data.Bits ((.&.), (.|.), testBit, shiftL, shiftR, bitSizeMaybe, Bits)
-import Data.List (sort, groupBy)
+import Data.Bits ((.|.), testBit, shiftL, shiftR)
+import Data.List (findIndices, groupBy, tails)
 
 example1 = "...#......\n\
           \.......#..\n\
@@ -23,14 +23,18 @@ empty :: [Int] -> [Int]
 empty = findEmpty . foldr (.|.) 0 . map (1 `shiftL`)
 
 findEmpty :: Integer -> [Int]
-findEmpty xs = map fst $ filter snd $ zip [0..] $ map (not . (`testBit` 0)) $ takeWhile (/= 0) $ iterate (`shiftR` 1) xs
+findEmpty x =
+  -- Get the index of the ones with the first bit activated
+  findIndices (not . (`testBit` 0))
+  -- Get all right shifts until 0
+  $ takeWhile (/= 0) $ iterate (`shiftR` 1) x
 
 expand :: [Int] -> [Int] -> [Int]
 expand = expand' 1
 
 expand' :: Int -> [Int] -> [Int] -> [Int]
 expand' c xs es = go xs es xs
-  where go xs [] as = as
+  where go _ [] as = as
         go [] _ as = as
         go (x:xs) (e:es) (a:as)
           | e < x     = go (x:xs) es (map (+c) (a:as))
@@ -56,12 +60,15 @@ expandUniverse' c gs =
 distance :: (Int, Int) -> (Int, Int) -> Int
 distance (ax, ay) (bx, by) = abs (ax - bx) + abs (ay - by)
 
+pairs :: [a] -> [(a, a)]
+pairs xs = [(x, y) | (x:rest) <- tails xs, y <- rest]
+
 part1 :: String -> Int
-part1 text = sum $ map (uncurry distance) $ [(a, b) | a <- universe, b <- universe, a < b]
+part1 text = sum $ map (uncurry distance) $ pairs universe
   where universe = expandUniverse $ galaxies text
 
 part2 :: Int -> String -> Int
-part2 c text = sum $ map (uncurry distance) $ [(a, b) | a <- universe, b <- universe, a < b]
+part2 c text = sum $ map (uncurry distance) $ pairs universe
   where universe = expandUniverse' c $ galaxies text
 
 main1 :: IO ()
