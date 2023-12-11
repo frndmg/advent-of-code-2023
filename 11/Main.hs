@@ -29,28 +29,22 @@ findEmpty x =
   -- Get all right shifts until 0
   $ takeWhile (/= 0) $ iterate (`shiftR` 1) x
 
-expand :: [Int] -> [Int] -> [Int]
-expand = expand' 1
-
-expand' :: Int -> [Int] -> [Int] -> [Int]
-expand' c xs es = go xs es xs
+expand :: Int -> [Int] -> [Int] -> [Int]
+expand c xs es = go xs es xs
   where go _ [] as = as
         go [] _ as = as
         go (x:xs) (e:es) (a:as)
           | e < x     = go (x:xs) es (map (+c) (a:as))
           | otherwise = a:go xs (e:es) as
 
-expandUniverse :: [(Int, Int)] -> [(Int, Int)]
-expandUniverse = expandUniverse' 1
-
-expandUniverse' :: Int -> [(Int, Int)] -> [(Int, Int)]
-expandUniverse' c gs =
+expandUniverse :: Int -> [(Int, Int)] -> [(Int, Int)]
+expandUniverse c gs =
   [ (x, y)
   | (x, columns) <- zip rows columns
   , y <- columns ]
   where
-    rows = expand' c (map (fst . head) byRows) emptyRows
-    columns = map (\x -> expand' c x emptyColumns) $ map (map snd) byRows
+    rows = expand c (map (fst . head) byRows) emptyRows
+    columns = map (\x -> expand c x emptyColumns) $ map (map snd) byRows
 
     emptyColumns = empty $ map snd gs
     emptyRows = empty $ map fst gs
@@ -69,7 +63,7 @@ part1 = part2 1
 part2 :: Int -> String -> Int
 part2 c text =
   sum $ map (uncurry distance)
-  $ pairs $ expandUniverse' c $ galaxies text
+  $ pairs $ expandUniverse c $ galaxies text
 
 main1 :: IO ()
 main1 = do
