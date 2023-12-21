@@ -92,7 +92,33 @@ partOne = length . (flood (1, 1) E) . makePuzzle
 
 main1 = readFile "input.txt" >>= (print . partOne)
 
+-- A better solution than this can be implemented
+-- We can go caching the result on each node when we are done visiting,
+-- this will speed up this solution substantially.
+partTwo text = maximum
+  $ map (\(init, dir) -> length $ flood init dir puzzle) inits'
+  where puzzle = makePuzzle text
+        inits' = inits height width
+        height = maximum $ map fst $ M.keys puzzle
+        width = maximum $ map snd $ M.keys puzzle
+
+initsSide :: Int -> Int -> Dir -> [((Int, Int), Dir)]
+initsSide height width N = map (\y -> ((height, y), N)) [1..width]
+initsSide _ width S      = map (\y -> ((1, y), S)) [1..width]
+initsSide height _ E     = map (\x -> ((x, 1), E)) [1..height]
+initsSide height width W = map (\x -> ((x, width), W)) [1..height]
+
+inits height width = (initsSide height width N)
+                     ++ (initsSide height width S)
+                     ++ (initsSide height width E)
+                     ++ (initsSide height width W)
+
+main2 = readFile "input.txt" >>= (print . partTwo)
+
 test = hspec $ do
   describe "part one" $ do
     it "should solve the example" $ do
       partOne example1 `shouldBe` 46
+  describe "part two" $ do
+    it "should solve the example" $ do
+      partTwo example1 `shouldBe` 51
